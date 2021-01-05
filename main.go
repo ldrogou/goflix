@@ -21,6 +21,11 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	movies, err := srv.store.GetMovies()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("movies=%v \n", movies)
 	defer srv.store.Close()
 	return nil
 }

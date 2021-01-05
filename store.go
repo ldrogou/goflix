@@ -45,3 +45,12 @@ func (store *dbStore) Open() error {
 func (store *dbStore) Close() error {
 	return store.db.Close()
 }
+
+func (store *dbStore) GetMovies() ([]*Movie, error) {
+	var movies []*Movie
+	err := store.db.Select(&movies, "SELECT * FROM movie")
+	if err != nil {
+		return movies, err
+	}
+	return movies, nil
+}

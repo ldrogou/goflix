@@ -10,7 +10,7 @@ type Movie struct {
 	TrailerURL  string `db:"trailer_url"`
 }
 
-func (m Movie) string() string {
+func (m Movie) String() string {
 	return fmt.Sprintf("id=%v, title=%v, releaseDate=%v, duration=%v, trailerURL=%v",
 		m.ID, m.Title, m.ReleaseDate, m.Duration, m.TrailerURL)
 }
