@@ -1,10 +1,41 @@
 package main
 
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
 type server struct {
-	store Store
+	router *mux.Router
+	store  Store
 }
 
 func newServer() *server {
-	s := &server{}
+	s := &server{
+		router: mux.NewRouter(),
+	}
+	s.routes()
 	return s
+}
+
+func (s *server) serveHTTP(rw http.ResponseWriter, r *http.Request) {
+	s.router.ServeHTTP(rw, r)
+}
+
+func (s *server) response(rw http.ResponseWriter, _ *http.Request, data interface{}, status int) {
+	rw.Header().Add("Content-type", "application/json")
+	rw.WriteHeader(status)
+
+	if data == nil {
+		return
+	}
+
+	err := json.NewEncoder(rw).Encode(data)
+	if err != nil {
+		log.Printf("Cannot encode to json (err=%v)\n", err)
+	}
+
 }
