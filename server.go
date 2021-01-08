@@ -40,14 +40,7 @@ func (s *server) response(rw http.ResponseWriter, _ *http.Request, data interfac
 
 }
 
-func (s *server) decode(rw http.ResponseWriter, r *http.Request) interface{} {
-	var data interface{}
+func (s *server) decode(rw http.ResponseWriter, r *http.Request, v interface{}) error {
+	return json.NewDecoder(r.Body).Decode(v)
 
-	err := json.NewDecoder(r.Body).Decode(&data)
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusBadRequest)
-		return err
-	}
-
-	return data
 }

@@ -47,11 +47,10 @@ func (s *server) handleMovie() http.HandlerFunc {
 
 			return
 		}
-		log.Printf("id %v est recherché", movieID)
-		movie, err := s.store.GetMovieById(movieID)
+		movie, err := s.store.GetMovieByID(movieID)
 		if err != nil {
 			log.Printf("Cannot load Movie (err=%v)", err)
-			s.response(rw, r, nil, http.StatusInternalServerError)
+			s.response(rw, r, nil, http.StatusNotFound)
 
 			return
 		}
@@ -66,9 +65,42 @@ func (s *server) handleMovie() http.HandlerFunc {
 	}
 }
 
-func(s *server) handleInsertMovie() http.HandlerFunc {
+func (s *server) handleInsertMovie() http.HandlerFunc {
+	type request struct {
+		Title       string `json:"title"`
+		ReleaseDate string `json:"release_date"`
+		Duration    int    `json:"duration"`
+		TrailerURL  string `json:"trailer_url"`
+	}
 	return func(rw http.ResponseWriter, r *http.Request) {
-		
+
+		req := request{}
+		err := s.decode(rw, r, &req)
+		if err != nil {
+			log.Printf("Cannot parse movie body err=%v", err)
+			s.response(rw, r, nil, http.StatusBadGateway)
+			return
+		}
+
+		//Create movie
+		m := &Movie{
+			ID:          0,
+			Title:       req.Title,
+			ReleaseDate: req.ReleaseDate,
+			Duration:    req.Duration,
+			TrailerURL:  req.TrailerURL,
+		}
+
+		//store movie in database
+		err = s.store.CreateMovie(m)
+		if err != nil {
+			log.Printf("Cannot create movie err=%v", err)
+			s.response(rw, r, nil, http.StatusInternalServerError)
+			return
+		}
+		var resp = mapMovieToJson(m)
+		s.response(rw, r, resp, http.StatusOK)
+
 	}
 }
 

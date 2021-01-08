@@ -12,7 +12,7 @@ type Store interface {
 	Open() error
 	Close() error
 	GetMovies() ([]*Movie, error)
-	GetMovieById(id int64) (*Movie, error)
+	GetMovieByID(id int64) (*Movie, error)
 	CreateMovie(m *Movie) error
 }
 
@@ -67,7 +67,7 @@ func (store *dbStore) GetMovieByID(id int64) (*Movie, error) {
 }
 
 func (store *dbStore) CreateMovie(m *Movie) error {
-	res, err := store.db.Exec("INSER INTO movie (title, release_date, duration, trailer_url) VALUES (?, ?, ?, ?)",
+	res, err := store.db.Exec("INSERT INTO movie (title, release_date, duration, trailer_url) VALUES (?, ?, ?, ?)",
 		m.Title, m.ReleaseDate, m.Duration, m.TrailerURL)
 	if err != nil {
 		return err
